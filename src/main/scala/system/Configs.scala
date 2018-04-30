@@ -75,3 +75,10 @@ class BaseFPGAConfig extends Config(new BaseConfig)
 
 class DefaultFPGAConfig extends Config(new WithNSmallCores(1) ++ new BaseFPGAConfig)
 class DefaultFPGASmallConfig extends Config(new DefaultFPGAConfig)
+
+
+class QuadCoreConfig extends Config(
+  new WithNBigCores(4) ++ new BaseConfig)
+
+class QuadCoreConfigRBB extends Config(
+  new WithJtagDTMSystem ++ new WithNBigCores(4) ++ new BaseConfig)
