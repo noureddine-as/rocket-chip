@@ -46,15 +46,20 @@ class TLErrorEvaluator(test: RequestPattern, testOn: Boolean, testOff: Boolean)(
       val inject_now = test(in.a.bits)
 
       val (d_first, d_last, _) = edgeOut.firstlast(out.d)
+      val d_hasData = edgeOut.hasData(out.d.bits)
 
       when (in.a.fire()) { inject_map.write(in.a.bits.source, inject_now) }
 
       val bypass = in.a.fire() && in.a.bits.source === in.d.bits.source
       val d_inject = Mux(bypass, inject_now, inject_map.read(in.d.bits.source)) holdUnless d_first
-      in.d.bits.error := out.d.bits.error || (d_last && d_inject)
+      in.d.bits.corrupt := out.d.bits.corrupt || (d_last && d_inject && d_hasData)
 
-      assert (Bool(!testOn)  || !out.d.fire() || !d_last || !d_inject ||  out.d.bits.error, "Error flag was not set!")
-      assert (Bool(!testOff) || !out.d.fire() || !d_last ||  d_inject || !out.d.bits.error, "Error flag was set!")
+      val r_corrupt = Reg(Bool())
+      val d_corrupt = (!d_first && r_corrupt) || out.d.bits.corrupt
+      when (out.d.fire()) { r_corrupt := d_corrupt }
+
+      assert (Bool(!testOn)  || !d_hasData || !out.d.fire() || !d_last || !d_inject ||  d_corrupt, "Corrupt flag was not set!")
+      assert (Bool(!testOff) || !d_hasData || !out.d.fire() || !d_last ||  d_inject || !d_corrupt, "Corrupt flag was set!")
     }
   }
 }
