@@ -87,5 +87,17 @@ class DefaultFPGASmallConfig extends Config(new DefaultFPGAConfig)
 class QuadCoreConfig extends Config(
   new WithNBigCores(4) ++ new BaseConfig)
 
+class CoherentDualCoreConfig extends Config(
+  new WithNBigCores(2) ++ new BaseConfig)
+
+class IncoherentDualCoreConfig extends Config(
+  new WithNBigCores(2) ++ new WithIncoherentTiles ++ new BaseConfig)
+
+class MiniIncoherentDualCoreConfig extends Config(
+  new WithReducedNBigCores(2) ++ new WithIncoherentTiles ++ new BaseConfig )
+
+class DefaultConfigRBB extends Config(
+  new WithJtagDTMSystem ++ new WithNBigCores(1) ++ new BaseConfig)
+
 class QuadCoreConfigRBB extends Config(
   new WithJtagDTMSystem ++ new WithNBigCores(4) ++ new BaseConfig)
